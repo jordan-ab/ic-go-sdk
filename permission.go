@@ -14,7 +14,9 @@
 
 package ic
 
-import "strings"
+import (
+	"strings"
+)
 
 const (
 	resourceUser    = "USER"
@@ -86,6 +88,19 @@ func (client *DefaultClient) resourceAllowed(accessPermissionResource string, re
 
 func (client *DefaultClient) actionAllowed(grantedAction int, requiredAction int) bool {
 	return grantedAction&requiredAction == requiredAction
+}
+
+func (client *DefaultClient) applyClientPermissionResourceValues(
+	grantedPermissions []Permission,
+	allowedOrganizationID string,
+) {
+	if allowedOrganizationID == "" {
+		return
+	}
+	for i := range grantedPermissions {
+		grantedPermissions[i].Resource = strings.ReplaceAll(
+			grantedPermissions[i].Resource, "{organizationId}", allowedOrganizationID)
+	}
 }
 
 func (client *DefaultClient) applyUserPermissionResourceValues(
